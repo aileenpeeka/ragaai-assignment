@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Agent Demo</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        form { margin-bottom: 20px; }
+        input[type="text"] { padding: 5px; }
+        button { padding: 5px 10px; }
+        .response { margin-top: 20px; }
+        audio { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Voice Agent Demo</h1>
+    <form action="/query" method="post">
+        <input type="text" name="symbol" placeholder="Enter stock symbol (e.g., AAPL)" required>
+        <button type="submit">Query</button>
+    </form>
+    {% if response %}
+    <div class="response">
+        <h2>Response:</h2>
+        <p>{{ response.text }}</p>
+        {% if response.audio_url %}
+        <audio controls>
+            <source src="{{ response.audio_url }}" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+        {% endif %}
+    </div>
+    {% endif %}
+</body>
+</html> 

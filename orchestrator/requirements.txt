@@ -1,0 +1,33 @@
+# API and Web Framework
+fastapi>=0.68.0
+uvicorn>=0.15.0
+python-dotenv>=0.19.0
+
+# HTTP Client
+httpx>=0.27.0
+
+# Utilities
+pydantic>=2.6.0
+loguru>=0.7.2
+redis>=5.0.0
+fastapi-limiter>=0.1.5
+
+# Testing
+pytest>=8.0.0
+pytest-cov>=4.1.0
+pytest-asyncio>=0.23.0
+
+# STT
+# openai-whisper>=0.1.0  # Uncomment if using OpenAI Whisper
+# transformers>=4.0.0    # Uncomment if using Hugging Face Whisper
+
+# LLM
+# openai>=1.12.0         # Uncomment if using OpenAI GPT
+# transformers>=4.0.0    # Uncomment if using Hugging Face LLMs
+
+# TTS
+# gTTS>=2.3.0            # Uncomment if using Google Text-to-Speech
+# pyttsx3>=2.90          # Uncomment if using pyttsx3
+
+PyYAML>=6.0.0
+python-multipart 

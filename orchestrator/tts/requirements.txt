@@ -1,0 +1,8 @@
+fastapi>=0.68.0
+uvicorn>=0.15.0
+python-dotenv>=0.19.0
+httpx>=0.27.0
+pydantic>=2.6.0
+# gTTS>=2.3.0            # Uncomment if using Google Text-to-Speech
+# pyttsx3>=2.90          # Uncomment if using pyttsx3 
+gTTS 

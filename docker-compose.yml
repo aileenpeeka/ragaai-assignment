@@ -1,0 +1,172 @@
+services:
+  # Build the base image first
+  base:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ragaai_base:latest
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-changeme}
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-changeme}", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    networks:
+      - app_network
+
+  orchestrator:
+    build:
+      context: ./orchestrator
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - LLM_SERVICE_URL=http://localhost:8009
+      - TTS_SERVICE_URL=http://localhost:8008
+    depends_on:
+      - redis
+      - language_agent
+      - retriever_agent
+      - scraping_agent
+      - analysis_agent
+      - stt_service
+      - tts_service
+      - llm_service
+    networks:
+      - app_network
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+
+  language_agent:
+    build:
+      context: ./orchestrator/agents
+      dockerfile: Dockerfile
+    command: python language_agent.py
+    ports:
+      - "8004:8004"
+    networks:
+      - app_network
+
+  retriever_agent:
+    build:
+      context: ./orchestrator/agents
+      dockerfile: Dockerfile
+    command: python retriever_agent.py
+    ports:
+      - "8002:8002"
+    environment:
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+    networks:
+      - app_network
+
+  scraping_agent:
+    build:
+      context: ./orchestrator/agents
+      dockerfile: Dockerfile
+    command: python scraping_agent.py
+    ports:
+      - "8001:8001"
+    networks:
+      - app_network
+
+  analysis_agent:
+    build:
+      context: ./orchestrator/agents
+      dockerfile: Dockerfile
+    command: python analysis_agent.py
+    ports:
+      - "8003:8003"
+    networks:
+      - app_network
+
+  stt_service:
+    build:
+      context: ./orchestrator/stt
+      dockerfile: Dockerfile
+    ports:
+      - "8007:8007"
+    networks:
+      - app_network
+
+  tts_service:
+    build:
+      context: ./orchestrator/tts
+      dockerfile: Dockerfile
+    ports:
+      - "8008:8008"
+    networks:
+      - app_network
+
+  llm_service:
+    build:
+      context: ./orchestrator/llm
+      dockerfile: Dockerfile
+    ports:
+      - "8009:8009"
+    networks:
+      - app_network
+
+  streamlit:
+    build: 
+      context: ./streamlit_app
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
+    environment:
+      - ENVIRONMENT=production
+      - PYTHONPATH=/app
+      - LOG_LEVEL=info
+    volumes:
+      - ./streamlit_app:/app
+    networks:
+      - app_network
+
+  # Elasticsearch for search and analytics
+  elasticsearch:
+    image: elasticsearch:8.12.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD:-changeme}
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200/_cluster/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
+
+volumes:
+  redis_data:
+  elasticsearch_data: 

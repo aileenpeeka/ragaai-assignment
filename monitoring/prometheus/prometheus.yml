@@ -1,0 +1,40 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'api_agent'
+    static_configs:
+      - targets: ['api_agent:8000']
+
+  - job_name: 'scraping_agent'
+    static_configs:
+      - targets: ['scraping_agent:8001']
+
+  - job_name: 'retriever_agent'
+    static_configs:
+      - targets: ['retriever_agent:8002']
+
+  - job_name: 'analysis_agent'
+    static_configs:
+      - targets: ['analysis_agent:8003']
+
+  - job_name: 'language_agent'
+    static_configs:
+      - targets: ['language_agent:8004']
+
+  - job_name: 'voice_agent'
+    static_configs:
+      - targets: ['voice_agent:8005']
+
+  - job_name: 'orchestrator'
+    static_configs:
+      - targets: ['orchestrator:8000']
+
+  - job_name: 'node_exporter'
+    static_configs:
+      - targets: ['node-exporter:9100'] 
