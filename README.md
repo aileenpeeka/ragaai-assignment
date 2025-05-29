@@ -63,6 +63,3 @@ ragaai_assignment/
 - `docs/MCP_setup_guide.md`: Microservices setup instructions
 - `docs/architecture_diagram.png`: System architecture visualization
 
-## License
-
-[Add your license information here] 
