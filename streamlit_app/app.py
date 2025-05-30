@@ -1,5 +1,6 @@
 import streamlit as st
 import asyncio
+import os
 
 # ------------------ Mocked Service Health ------------------
 async def check_service_health(url, service_name):
@@ -26,9 +27,22 @@ async def display_service_status():
 async def process_user_query_async(query):
     st.write("Processing query directly via LLM and TTS (mocked)...")
     await asyncio.sleep(1)  # Simulate processing delay
-    fake_response = f"**Mocked LLM Response:** Here is your market brief for '{query}'.\n\n- The market is trending upwards 🚀\n- Key sectors: AI, Cloud, Finance\n- Major news: Everything is awesome!\n"
-    st.write(fake_response)
-    st.success("TTS Audio: (Pretend audio plays here!) 🔊")
+    fake_response = (
+        f"**Mocked LLM Response:** Here is your market brief for '{query}'.\n\n"
+        "- The market is trending upwards 🚀\n"
+        "- Key sectors: AI, Cloud, Finance\n"
+        "- Major news: Everything is awesome!\n"
+    )
+    st.markdown(fake_response)
+    
+    # Simulate TTS (audio) by playing a sample mp3 if available
+    audio_file_path = os.path.join(os.path.dirname(__file__), "sample.mp3")
+    if os.path.exists(audio_file_path):
+        audio_bytes = open(audio_file_path, "rb").read()
+        st.audio(audio_bytes, format="audio/mp3")
+        st.success("TTS Audio: (Sample audio played!) 🔊")
+    else:
+        st.info("TTS Audio: (Pretend audio plays here!) 🔊")
 
 # ------------------ Streamlit Page Setup ------------------
 st.set_page_config(
